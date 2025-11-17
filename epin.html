@@ -144,6 +144,7 @@
     .cards {
       gap: 10px;
       margin-top: 16px;
+      flex-direction: row;
     }
     
     .card {
@@ -195,12 +196,17 @@
     }
     
     .cards {
-      flex-direction: column;
+      flex-direction: row;
       gap: 8px;
     }
     
     .card {
       min-height: 70px;
+      padding: 12px;
+    }
+    
+    .card .title {
+      font-size: 12px;
     }
     
     h3 {
@@ -215,7 +221,11 @@
     }
     
     .card {
-      padding: 12px;
+      padding: 10px;
+    }
+    
+    .card .title {
+      font-size: 11px;
     }
     
     .input {
