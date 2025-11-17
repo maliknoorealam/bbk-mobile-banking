@@ -67,7 +67,7 @@
     font-size:36px;line-height:1;font-weight:700;color:var(--blue);
   }
   .subtitle{
-    color:var(--muted);font-weight:400;margin-bottom:18px;
+    color:var(--muted);font-weight:400;margin-bottom:18px;font-size:15px;
   }
 
   /* thumbnails */
@@ -122,105 +122,111 @@
   }
   .cancel{background:transparent;color:var(--accent);text-align:center;font-weight:600;border:none;font-size:16px;cursor:pointer;padding:8px}
 
-  /* Mobile Responsive Styles */
+  /* Mobile Responsive Styles - Keep same font sizes as desktop */
   @media (max-width: 768px) {
     .wrap {
-      padding: 20px 16px 32px;
+      padding: 28px 20px 48px;
       max-width: 100%;
     }
     
+    /* Keep desktop font sizes on mobile */
     h1 {
-      font-size: 28px;
-      margin: 6px 0 4px;
+      font-size: 36px;
+      margin: 8px 0 6px;
     }
     
     .subtitle {
-      font-size: 14px;
-      margin-bottom: 16px;
+      font-size: 15px;
+      margin-bottom: 18px;
     }
     
     .card {
-      padding: 18px;
-      font-size: 14px;
-      margin-bottom: 16px;
+      padding: 22px;
+      font-size: 15px;
+      margin-bottom: 18px;
     }
     
     .card h3 {
-      font-size: 15px;
-      margin-bottom: 10px;
+      font-size: 16px;
+      margin-bottom: 12px;
     }
     
     .fineprint {
-      font-size: 12px;
+      font-size: 13px;
     }
     
     .consent {
-      font-size: 11px;
-      margin: 16px 4px 32px;
+      font-size: 12px;
+      margin: 20px 4px 40px;
     }
     
     .btn {
-      padding: 14px;
-      font-size: 16px;
+      padding: 16px;
+      font-size: 18px;
       min-height: 48px; /* Touch-friendly */
     }
     
     .cancel {
-      font-size: 15px;
+      font-size: 16px;
       min-height: 44px; /* Touch-friendly */
     }
     
     .thumb .img {
-      height: 60px;
+      height: 72px;
     }
     
     .thumb label {
-      font-size: 12px;
-      margin-top: 6px;
+      font-size: 14px;
+      margin-top: 8px;
     }
     
     .row {
-      gap: 4px;
-      margin: 16px 0 18px;
+      gap: 6px;
+      margin: 18px 0 22px;
     }
   }
   
   @media (max-width: 480px) {
     .wrap {
-      padding: 16px 12px 24px;
+      padding: 24px 16px 40px;
     }
     
+    /* Still keep desktop font sizes */
     h1 {
-      font-size: 24px;
+      font-size: 36px;
     }
     
     .subtitle {
-      font-size: 13px;
+      font-size: 15px;
     }
     
     .card {
-      padding: 16px;
-      border-radius: 12px;
+      padding: 20px;
     }
     
     .btn {
-      padding: 12px;
-      font-size: 15px;
+      padding: 16px;
+      font-size: 18px;
     }
   }
   
   @media (max-width: 360px) {
+    .wrap {
+      padding: 20px 14px 36px;
+    }
+    
+    /* Keep desktop font sizes even on small screens */
     h1 {
-      font-size: 22px;
+      font-size: 36px;
     }
     
     .card {
-      padding: 14px;
+      padding: 18px;
     }
     
     .btn {
-      font-size: 14px;
-      padding: 12px;
+      font-size: 18px;
+      padding: 16px;
     }
   }
   
