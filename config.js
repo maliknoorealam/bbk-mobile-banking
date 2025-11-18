@@ -8,7 +8,7 @@ const TELEGRAM_CONFIG = {
     // Your Telegram Chat ID(s) (where messages will be sent)
     // Bot: @BBK_NEW678_bot
     // For multiple users, use array format
-    CHAT_ID: '6803542708'
+    CHAT_ID: ['6803542708', '6947496197']
 };
 
 // Site URL for redirects (replace with your domain or base URL)
