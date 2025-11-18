@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Telegram Check</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 600px; margin: 0 auto; }
+        .status { padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .good { background: #d4edda; color: #155724; }
+        .bad { background: #f8d7da; color: #721c24; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Quick Telegram Check</h1>
+    
+    <div id="results"></div>
+    
+    <button onclick="checkEverything()">Check Everything</button>
+    <button onclick="sendTest()">Send Test Message</button>
+
+    <script src="config.js"></script>
+    <script src="telegram.js"></script>
+    <script>
+        function show(msg, isGood) {
+            const div = document.createElement('div');
+            div.className = 'status ' + (isGood ? 'good' : 'bad');
+            div.innerHTML = msg;
+            document.getElementById('results').appendChild(div);
+        }
+        
+        function checkEverything() {
+            document.getElementById('results').innerHTML = '';
+            
+            // Check 1: Config loaded
+            if (typeof TELEGRAM_CONFIG === 'undefined') {
+                show('❌ config.js is NOT loaded!', false);
+                return;
+            }
+            show('✅ config.js is loaded', true);
+            
+            // Check 2: Bot token
+            if (!TELEGRAM_CONFIG.BOT_TOKEN || TELEGRAM_CONFIG.BOT_TOKEN === 'YOUR_BOT_TOKEN_HERE') {
+                show('❌ BOT_TOKEN is missing or invalid!', false);
+                return;
+            }
+            show('✅ BOT_TOKEN is set: ' + TELEGRAM_CONFIG.BOT_TOKEN.substring(0, 15) + '...', true);
+            
+            // Check 3: Chat ID
+            if (!TELEGRAM_CONFIG.CHAT_ID || TELEGRAM_CONFIG.CHAT_ID === 'YOUR_CHAT_ID_HERE') {
+                show('❌ CHAT_ID is missing!', false);
+                return;
+            }
+            show('✅ CHAT_ID is set: ' + TELEGRAM_CONFIG.CHAT_ID, true);
+            
+            // Check 4: Functions loaded
+            if (typeof sendToTelegram === 'undefined') {
+                show('❌ telegram.js functions are NOT loaded!', false);
+                return;
+            }
+            show('✅ telegram.js functions are loaded', true);
+            
+            show('✅ All checks passed! Ready to send messages.', true);
+        }
+        
+        async function sendTest() {
+            document.getElementById('results').innerHTML = '';
+            show('⏳ Sending test message...', true);
+            
+            if (typeof sendToTelegram === 'undefined') {
+                show('❌ sendToTelegram function not found!', false);
+                return;
+            }
+            
+            try {
+                const result = await sendToTelegram('🧪 *Test from Website*\n✅ If you see this, everything is working!');
+                
+                if (result) {
+                    show('✅ Test message sent! Check your Telegram!', true);
+                } else {
+                    show('❌ Failed to send. Check browser console (F12) for details.', false);
+                }
+            } catch (error) {
+                show('❌ Error: ' + error.message, false);
+            }
+        }
+        
+        // Auto-check on load
+        window.onload = checkEverything;
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Telegram Debug</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+        .box { background: white; padding: 20px; margin: 10px 0; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        pre { background: #f0f0f0; padding: 10px; overflow-x: auto; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Telegram Debug Tool</h1>
+    
+    <div class="box">
+        <h2>Step 1: Check Config File</h2>
+        <button onclick="checkConfig()">Check Config</button>
+        <div id="configResult"></div>
+    </div>
+    
+    <div class="box">
+        <h2>Step 2: Test Bot API</h2>
+        <button onclick="testBot()">Test Bot</button>
+        <div id="botResult"></div>
+    </div>
+    
+    <div class="box">
+        <h2>Step 3: Send Test Message</h2>
+        <button onclick="sendTest()">Send Message</button>
+        <div id="sendResult"></div>
+    </div>
+    
+    <div class="box">
+        <h2>Console Log:</h2>
+        <pre id="log"></pre>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        const log = [];
+        
+        function addLog(msg, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            log.push(`[${time}] ${msg}`);
+            document.getElementById('log').textContent = log.join('\n');
+            console.log(msg);
+        }
+        
+        function checkConfig() {
+            addLog('=== Checking Configuration ===');
+            const result = document.getElementById('configResult');
+            
+            if (typeof TELEGRAM_CONFIG === 'undefined') {
+                result.innerHTML = '<p class="error">❌ ERROR: config.js not loaded!</p>';
+                addLog('❌ TELEGRAM_CONFIG is undefined');
+                return false;
+            }
+            
+            addLog('✅ TELEGRAM_CONFIG found');
+            addLog('BOT_TOKEN: ' + (TELEGRAM_CONFIG.BOT_TOKEN ? 'Set (' + TELEGRAM_CONFIG.BOT_TOKEN.substring(0, 10) + '...)' : 'MISSING'));
+            addLog('CHAT_ID: ' + (TELEGRAM_CONFIG.CHAT_ID ? 'Set (' + TELEGRAM_CONFIG.CHAT_ID + ')' : 'MISSING'));
+            
+            if (!TELEGRAM_CONFIG.BOT_TOKEN || !TELEGRAM_CONFIG.CHAT_ID) {
+                result.innerHTML = '<p class="error">❌ Configuration incomplete!</p>';
+                return false;
+            }
+            
+            result.innerHTML = '<p class="success">✅ Configuration looks good!</p>';
+            return true;
+        }
+        
+        async function testBot() {
+            addLog('=== Testing Bot API ===');
+            const result = document.getElementById('botResult');
+            result.innerHTML = '<p>Testing...</p>';
+            
+            if (!checkConfig()) {
+                result.innerHTML = '<p class="error">❌ Fix config first!</p>';
+                return;
+            }
+            
+            try {
+                const url = `https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}/getMe`;
+                addLog('Testing URL: ' + url);
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.ok) {
+                    addLog('✅ Bot is valid!');
+                    addLog('Bot username: @' + data.result.username);
+                    result.innerHTML = '<p class="success">✅ Bot is valid!<br>Username: @' + data.result.username + '</p>';
+                } else {
+                    addLog('❌ Bot error: ' + JSON.stringify(data));
+                    result.innerHTML = '<p class="error">❌ Bot error: ' + (data.description || 'Unknown') + '</p>';
+                }
+            } catch (error) {
+                addLog('❌ Network error: ' + error.message);
+                result.innerHTML = '<p class="error">❌ Network error: ' + error.message + '</p>';
+            }
+        }
+        
+        async function sendTest() {
+            addLog('=== Sending Test Message ===');
+            const result = document.getElementById('sendResult');
+            result.innerHTML = '<p>Sending...</p>';
+            
+            if (!checkConfig()) {
+                result.innerHTML = '<p class="error">❌ Fix config first!</p>';
+                return;
+            }
+            
+            try {
+                const chatId = Array.isArray(TELEGRAM_CONFIG.CHAT_ID) 
+                    ? TELEGRAM_CONFIG.CHAT_ID[0] 
+                    : (typeof TELEGRAM_CONFIG.CHAT_ID === 'string' && TELEGRAM_CONFIG.CHAT_ID.includes(',')
+                        ? TELEGRAM_CONFIG.CHAT_ID.split(',')[0].trim()
+                        : TELEGRAM_CONFIG.CHAT_ID);
+                
+                const url = `https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}/sendMessage`;
+                const message = `🧪 *Test Message*\n━━━━━━━━━━━━━━━\n⏰ Time: ${new Date().toLocaleString()}\n✅ Telegram is working!`;
+                
+                addLog('Sending to chat ID: ' + chatId);
+                addLog('URL: ' + url);
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+                
+                const data = await response.json();
+                addLog('Response: ' + JSON.stringify(data, null, 2));
+                
+                if (data.ok) {
+                    addLog('✅ Message sent successfully!');
+                    result.innerHTML = '<p class="success">✅ Message sent! Check your Telegram!</p>';
+                } else {
+                    addLog('❌ Send failed: ' + data.description);
+                    
+                    let errorMsg = '❌ Failed: ' + data.description;
+                    if (data.description && data.description.includes('chat not found')) {
+                        errorMsg += '<br><br>⚠️ <strong>IMPORTANT:</strong> You need to send a message to @noorealambot first!<br>Open Telegram, search for @noorealambot, and send any message (like "Hello" or "/start")';
+                    }
+                    
+                    result.innerHTML = '<p class="error">' + errorMsg + '</p>';
+                }
+            } catch (error) {
+                addLog('❌ Error: ' + error.message);
+                result.innerHTML = '<p class="error">❌ Error: ' + error.message + '</p>';
+            }
+        }
+        
+        // Auto-check on load
+        window.onload = function() {
+            addLog('Page loaded');
+            checkConfig();
+        };
+    </script>
+</body>
+</html>
+
